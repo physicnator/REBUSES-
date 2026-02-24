@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Quiz Big Screen</title>
+<style>
+body{
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: black;
+    color: white;
+}
+
+h1{
+    font-size: 50px;
+}
+
+#timer{
+    font-size: 80px;
+    margin: 20px;
+    color: red;
+}
+
+#score{
+    font-size: 35px;
+    margin: 20px;
+}
+
+#questionCount{
+    font-size: 30px;
+    margin: 20px;
+}
+
+input{
+    padding: 15px;
+    font-size: 25px;
+    width: 350px;
+    text-align: center;
+}
+
+button{
+    padding: 15px 30px;
+    font-size: 20px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+#submittedAnswer{
+    margin-top: 25px;
+    font-size: 40px;
+    color: yellow;
+}
+
+#summary{
+    display: none;
+    margin-top: 30px;
+    font-size: 25px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>QUIZ ROUND</h1>
+
+<div id="timer">20</div>
+
+<div id="score">
+Correct Answers: <span id="correct">0</span>
+</div>
+
+<div id="questionCount">
+Question: <span id="currentQuestion">1</span> / 30
+</div>
+
+<br>
+
+<input type="text" id="answerInput" placeholder="Type your answer here">
+
+<br><br>
+
+<button id="startBtn" onclick="startTimer()">Start Timer</button>
+<button onclick="submitAnswer()">Submit</button>
+<button onclick="nextQuestion()">Next Question</button>
+
+<div id="submittedAnswer"></div>
+
+<div id="summary">
+<h2>FINAL RESULT</h2>
+<p>Total Correct Answers: <span id="finalCorrect"></span></p>
+<p>Average Time Taken: <span id="averageTime"></span> seconds</p>
+</div>
+
+<script>
+
+let totalQuestions = 30;
+let currentQuestion = 1;
+let correctCount = 0;
+let timeLeft = 20;
+let timerInterval;
+let totalTimeUsed = 0;
+let correctAnswer = "thalapathy";
+let timerRunning = false;
+
+function startTimer(){
+    if(timerRunning) return;
+
+    timerRunning = true;
+    timeLeft = 20;
+    document.getElementById("timer").innerText = timeLeft;
+
+    timerInterval = setInterval(function(){
+        timeLeft--;
+        document.getElementById("timer").innerText = timeLeft;
+
+        if(timeLeft <= 0){
+            clearInterval(timerInterval);
+            timerRunning = false;
+            submitAnswer();
+        }
+    },1000);
+
+    document.getElementById("startBtn").style.display = "none";
+}
+
+function submitAnswer(){
+
+    if(timerRunning){
+        clearInterval(timerInterval);
+        timerRunning = false;
+    }
+
+    let userAnswer = document.getElementById("answerInput").value.trim();
+    let timeTaken = 20 - timeLeft;
+    totalTimeUsed += timeTaken;
+
+    // Display entered answer
+    document.getElementById("submittedAnswer").innerText = "Submitted Answer: " + userAnswer;
+
+    if(userAnswer.toLowerCase() === correctAnswer){
+        correctCount++;
+    }
+
+    document.getElementById("correct").innerText = correctCount;
+    document.getElementById("answerInput").value = "";
+}
+
+function nextQuestion(){
+
+    if(currentQuestion < totalQuestions){
+        currentQuestion++;
+        document.getElementById("currentQuestion").innerText = currentQuestion;
+        document.getElementById("timer").innerText = "20";
+
+        // Clear displayed answer
+        document.getElementById("submittedAnswer").innerText = "";
+
+        // Automatically start timer from Q2 onwards
+        startTimer();
+
+    }else{
+        endQuiz();
+    }
+}
+
+function endQuiz(){
+    document.getElementById("timer").style.display = "none";
+    document.getElementById("answerInput").style.display = "none";
+    document.querySelectorAll("button").forEach(btn => btn.style.display="none");
+    document.getElementById("summary").style.display = "block";
+
+    let average = (totalTimeUsed / totalQuestions).toFixed(2);
+
+    document.getElementById("finalCorrect").innerText = correctCount;
+    document.getElementById("averageTime").innerText = average;
+}
+
+</script>
+
+</body>
+</html>
